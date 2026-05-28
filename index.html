@@ -321,7 +321,7 @@ function upd(id){const val=document.getElementById(id)?.value||'';const dash=id.
 function updBefore(i,v){state.gp.before[i]=v;updateOutput()}
 function addBefore(){state.gp.before.push('');renderForm();updateOutput()}
 function rmBefore(i){state.gp.before.splice(i,1);renderForm();updateOutput()}
-function updStep(i,k,v){state.gp.steps[i][k]=v;if(k==='type'&&v==='decision'&&!state.gp.steps[i].choices?.length)state.gp.steps[i].choices=[{label:'',goTo:0}];renderForm();updateOutput()}
+function updStep(i,k,v){state.gp.steps[i][k]=v;if(k==='type'){if(v==='decision'&&!state.gp.steps[i].choices?.length)state.gp.steps[i].choices=[{label:'',goTo:0}];renderForm();}updateOutput();}
 function rmStep(i){state.gp.steps.splice(i,1);renderForm();updateOutput()}
 function addStep(){state.gp.steps.push({type:'action',title:'',body:'',link:'',linkUrl:'',choices:[],judgement:''});renderForm();updateOutput()}
 function updChoice(si,ci,k,v){state.gp.steps[si].choices[ci][k]=k==='goTo'?Math.max(0,parseInt(v)||0):v;updateOutput()}
@@ -384,9 +384,15 @@ function addRel(p){state[p].related.push({text:'',url:''});renderForm();updateOu
 function rmRel(p,i){state[p].related.splice(i,1);renderForm();updateOutput()}
 
 // ── PREVIEW ──
+let _debounceTimer=null;
 function updateOutput(){
-  document.getElementById('preview-area').innerHTML=renderPreview();
+  // Update code box immediately for responsiveness
   document.getElementById('code-box').textContent=generateCode();
+  // Debounce preview render - only update 150ms after last keystroke
+  clearTimeout(_debounceTimer);
+  _debounceTimer=setTimeout(()=>{
+    document.getElementById('preview-area').innerHTML=renderPreview();
+  },150);
   const btn=document.getElementById('copy-btn');btn.textContent='Copy code';btn.classList.remove('copied');
 }
 
