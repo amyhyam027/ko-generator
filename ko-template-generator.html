@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KnowledgeOwl Template Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%;background:#1F1446 !important;font-family:'Montserrat',sans-serif}
+  .ko-gen,.ko-gen *{font-family:'Montserrat',sans-serif !important}
+  .ko-gen{background:#1F1446 !important;color:#fff !important;padding:28px 24px;max-width:1100px;margin:0 auto}
+  .ko-gen a{color:inherit !important;text-decoration:none !important}
+  .app-title{font-size:13px !important;font-weight:700 !important;color:rgba(255,255,255,0.35) !important;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px}
+  .type-tabs{display:flex !important;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+  .type-tab{font-family:'Montserrat',sans-serif !important;font-size:11px !important;font-weight:700 !important;padding:7px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.15) !important;background:transparent !important;color:rgba(255,255,255,0.4) !important;cursor:pointer;transition:all 0.15s;letter-spacing:0.03em}
+  .type-tab.active{background:#FF48D8 !important;border-color:#FF48D8 !important;color:#fff !important}
+  .type-tab:hover:not(.active){color:rgba(255,255,255,0.8) !important;border-color:rgba(255,255,255,0.3) !important}
+  .layout{display:grid !important;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:700px){.layout{grid-template-columns:1fr !important}}
+  .panel{background:rgba(255,255,255,0.05) !important;border:1px solid rgba(255,255,255,0.1) !important;border-radius:12px;padding:18px;overflow-y:auto;max-height:80vh}
+  .panel-label{font-size:10px !important;font-weight:700 !important;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.25) !important;margin-bottom:14px}
+  .ko-gen input,.ko-gen textarea,.ko-gen select{font-family:'Montserrat',sans-serif !important;font-size:12px !important;background:rgba(255,255,255,0.08) !important;background-color:rgba(255,255,255,0.08) !important;border:1px solid rgba(255,255,255,0.18) !important;border-radius:8px !important;color:#fff !important;-webkit-text-fill-color:#fff !important;padding:8px 10px !important;outline:none !important;transition:border-color 0.15s;width:100%;box-shadow:none !important}
+  .ko-gen input:focus,.ko-gen textarea:focus,.ko-gen select:focus{border-color:#FF48D8 !important;box-shadow:none !important}
+  .ko-gen textarea{resize:vertical;min-height:60px}
+  .ko-gen select option{background:#1F1446 !important;color:#fff !important}
+  .ko-gen input::placeholder,.ko-gen textarea::placeholder{color:rgba(255,255,255,0.25) !important;-webkit-text-fill-color:rgba(255,255,255,0.25) !important}
+  .field{margin-bottom:12px}
+  .field label{display:block !important;font-size:11px !important;font-weight:600 !important;color:rgba(255,255,255,0.5) !important;margin-bottom:5px;letter-spacing:0.02em}
+  .steps-label{font-size:10px !important;font-weight:700 !important;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.25) !important;margin-bottom:10px;margin-top:4px}
+  .step-block{background:rgba(255,255,255,0.05) !important;border:1px solid rgba(255,255,255,0.12) !important;border-radius:10px;padding:12px;margin-bottom:10px}
+  .step-block-header{display:flex !important;align-items:center;gap:8px;margin-bottom:10px}
+  .step-num-badge{width:22px;height:22px;border-radius:50%;background:#FF48D8 !important;color:#fff !important;font-size:10px !important;font-weight:700 !important;display:flex !important;align-items:center;justify-content:center;flex-shrink:0}
+  .step-type-select{width:auto !important;font-size:11px !important;font-weight:600 !important;background:rgba(255,72,216,0.2) !important;background-color:rgba(255,72,216,0.2) !important;border:1px solid rgba(255,72,216,0.4) !important;border-radius:6px !important;color:#FF48D8 !important;-webkit-text-fill-color:#FF48D8 !important;padding:4px 8px !important;cursor:pointer}
+  .section-type-select{width:auto !important;font-size:11px !important;font-weight:600 !important;background:rgba(96,240,248,0.15) !important;background-color:rgba(96,240,248,0.15) !important;border:1px solid rgba(96,240,248,0.3) !important;border-radius:6px !important;color:#60F0F8 !important;-webkit-text-fill-color:#60F0F8 !important;padding:4px 8px !important;cursor:pointer;flex-shrink:0}
+  .step-remove{margin-left:auto;background:rgba(255,255,255,0.07) !important;border:none !important;color:rgba(255,255,255,0.35) !important;width:22px;height:22px;border-radius:6px;cursor:pointer;font-size:16px !important;display:flex !important;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+  .step-remove:hover{background:rgba(255,80,80,0.25) !important;color:#ff8080 !important}
+  .choices-label{font-size:10px !important;font-weight:700 !important;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,72,216,0.8) !important;margin-bottom:7px}
+  .choice-row{display:flex !important;gap:6px;margin-bottom:6px;align-items:center}
+  .choice-row input{flex:1}
+  .choice-goto{width:80px !important;text-align:center !important}
+  .choice-goto-label{font-size:10px !important;color:rgba(255,255,255,0.35) !important;white-space:nowrap;flex-shrink:0}
+  .rm-btn{background:none !important;border:none !important;color:rgba(255,255,255,0.3) !important;cursor:pointer;font-size:18px !important;padding:0 2px;line-height:1;flex-shrink:0;width:auto !important}
+  .rm-btn:hover{color:#ff8080 !important}
+  .btn-add-sub{font-size:11px !important;font-weight:600 !important;background:rgba(255,72,216,0.08) !important;border:1px dashed rgba(255,72,216,0.3) !important;border-radius:6px;color:#FF48D8 !important;padding:5px 10px;cursor:pointer;width:100%;margin-top:4px}
+  .btn-add-sub:hover{background:rgba(255,72,216,0.18) !important}
+  .btn-add-sub-teal{font-size:11px !important;font-weight:600 !important;background:rgba(96,240,248,0.08) !important;border:1px dashed rgba(96,240,248,0.3) !important;border-radius:6px;color:#60F0F8 !important;padding:5px 10px;cursor:pointer;width:100%;margin-top:4px}
+  .btn-add-sub-teal:hover{background:rgba(96,240,248,0.18) !important}
+  .section-block{background:rgba(255,255,255,0.05) !important;border:1px solid rgba(255,255,255,0.12) !important;border-radius:10px;padding:12px;margin-bottom:10px}
+  .section-header{display:flex !important;align-items:center;gap:8px;margin-bottom:10px}
+  .section-header .field{flex:1;margin:0}
+  .values-row{display:grid !important;grid-template-columns:1fr 70px 1fr 22px;gap:5px;margin-bottom:6px;align-items:center}
+  .steps-row{display:flex !important;gap:6px;margin-bottom:6px;align-items:center}
+  .steps-row-num{width:18px;height:18px;border-radius:50%;background:#60F0F8 !important;color:#1F1446 !important;font-size:9px !important;font-weight:700 !important;display:flex !important;align-items:center;justify-content:center;flex-shrink:0}
+  .contacts-row{display:grid !important;grid-template-columns:1fr 1fr 1fr 22px;gap:5px;margin-bottom:6px;align-items:center}
+  .related-row{display:flex !important;gap:6px;margin-bottom:6px;align-items:center}
+  .related-row input{flex:1}
+  .btn-add{font-size:11px !important;font-weight:700 !important;background:rgba(255,255,255,0.06) !important;border:1px dashed rgba(255,255,255,0.16) !important;border-radius:8px;color:rgba(255,255,255,0.45) !important;padding:8px;cursor:pointer;width:100%;margin-top:4px;transition:all 0.15s;letter-spacing:0.02em}
+  .btn-add:hover{background:rgba(255,255,255,0.1) !important;color:#fff !important;border-color:rgba(255,255,255,0.3) !important}
+  .btn-copy{font-size:12px !important;font-weight:700 !important;background:#FF48D8 !important;border:none !important;border-radius:8px;color:#fff !important;padding:10px 20px;cursor:pointer;width:100%;margin-top:12px;letter-spacing:0.03em;transition:all 0.15s}
+  .btn-copy:hover{background:#e030c0 !important}
+  .btn-copy.copied{background:#60F0F8 !important;color:#1F1446 !important}
+  .output-panel{background:rgba(0,0,0,0.3) !important;border:1px solid rgba(255,255,255,0.1) !important;border-radius:12px;padding:18px;max-height:80vh;overflow-y:auto;display:flex !important;flex-direction:column;gap:12px}
+  .output-label{font-size:10px !important;font-weight:700 !important;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.25) !important;flex-shrink:0}
+  .preview-title{font-size:10px !important;font-weight:600 !important;color:rgba(255,255,255,0.25) !important;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em}
+  .preview-box{background:rgba(255,255,255,0.04) !important;border:1px solid rgba(255,255,255,0.09) !important;border-radius:10px;padding:14px;font-size:11px !important;line-height:1.5}
+  .preview-badge{display:inline-block !important;font-size:9px !important;font-weight:700 !important;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-bottom:8px}
+  .preview-badge.gp{background:rgba(255,72,216,0.2) !important;color:#FF48D8 !important}
+  .preview-badge.qr{background:rgba(96,240,248,0.15) !important;color:#60F0F8 !important}
+  .preview-badge.cb{background:rgba(255,180,80,0.15) !important;color:#ffb450 !important}
+  .preview-h1{font-size:14px !important;font-weight:700 !important;color:#fff !important;margin-bottom:3px}
+  .preview-meta{font-size:10px !important;color:rgba(255,255,255,0.3) !important;margin-bottom:10px}
+  .preview-section-label{font-size:9px !important;font-weight:700 !important;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.3) !important;margin:10px 0 6px;border-bottom:1px solid rgba(255,255,255,0.07) !important;padding-bottom:4px}
+  .preview-step{display:flex !important;gap:8px;align-items:flex-start;margin-bottom:5px}
+  .preview-step-num{width:18px;height:18px;border-radius:50%;background:#FF48D8 !important;color:#fff !important;font-size:9px !important;font-weight:700 !important;display:flex !important;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .preview-step-num.teal{background:#60F0F8 !important;color:#1F1446 !important}
+  .preview-step-card{flex:1;background:rgba(255,255,255,0.05) !important;border-radius:5px;padding:5px 8px;font-size:10px !important;color:rgba(255,255,255,0.6) !important}
+  .preview-step-title{font-weight:700 !important;color:#fff !important;font-size:11px !important;margin-bottom:1px}
+  .preview-choice{background:rgba(255,72,216,0.1) !important;border:1px solid rgba(255,72,216,0.2) !important;border-radius:4px;padding:4px 7px;font-size:10px !important;color:#fff !important;margin-top:3px;display:flex !important;justify-content:space-between}
+  .preview-value-grid{display:flex !important;flex-wrap:wrap;gap:5px}
+  .preview-value-card{background:rgba(96,240,248,0.06) !important;border:1px solid rgba(96,240,248,0.12) !important;border-radius:6px;padding:6px 9px;min-width:80px}
+  .preview-value-lbl{font-size:9px !important;color:rgba(255,255,255,0.35) !important}
+  .preview-value-val{font-size:14px !important;font-weight:700 !important;color:#60F0F8 !important}
+  .preview-contact-row{display:grid !important;grid-template-columns:1fr 1fr 1fr;gap:6px;background:rgba(255,255,255,0.04) !important;border:1px solid rgba(255,255,255,0.07) !important;border-radius:6px;padding:6px 8px;margin-bottom:4px;font-size:10px !important}
+  .preview-contact-name{font-weight:700 !important;color:#fff !important}
+  .preview-contact-detail{color:rgba(255,255,255,0.55) !important}
+  .preview-contact-when{color:rgba(255,255,255,0.35) !important}
+  .preview-qa{border:1px solid rgba(255,255,255,0.08) !important;border-radius:6px;padding:6px 9px;margin-bottom:4px}
+  .preview-qa-q{font-size:11px !important;font-weight:600 !important;color:#fff !important;margin-bottom:2px}
+  .preview-qa-a{font-size:10px !important;color:rgba(255,255,255,0.45) !important}
+  /* Table builder styles */
+  .table-builder{overflow-x:auto;margin-top:6px}
+  .table-builder table{border-collapse:collapse;min-width:100%}
+  .table-builder th,.table-builder td{padding:0;vertical-align:top}
+  .table-builder .th-cell{display:flex;align-items:center;gap:3px;padding:0 3px 3px 0;min-width:90px}
+  .table-builder .th-cell input{border-color:rgba(96,240,248,0.4) !important;background:rgba(96,240,248,0.08) !important;color:#60F0F8 !important;-webkit-text-fill-color:#60F0F8 !important;font-weight:700 !important;font-size:11px !important}
+  .table-builder .th-cell input::placeholder{color:rgba(96,240,248,0.35) !important;-webkit-text-fill-color:rgba(96,240,248,0.35) !important}
+  .table-builder .td-cell{padding:0 3px 3px 0;min-width:90px}
+  .table-builder .td-cell input{font-size:11px !important}
+  .table-builder .rm-col-btn,.table-builder .rm-row-btn{background:none !important;border:none !important;color:rgba(255,255,255,0.2) !important;cursor:pointer;font-size:14px !important;padding:0;line-height:1;width:auto !important;flex-shrink:0}
+  .table-builder .rm-col-btn:hover,.table-builder .rm-row-btn:hover{color:#ff8080 !important}
+  .table-builder .add-col-btn{background:rgba(96,240,248,0.07) !important;border:1px dashed rgba(96,240,248,0.25) !important;border-radius:6px;color:#60F0F8 !important;font-size:10px !important;font-weight:600 !important;padding:6px 8px;cursor:pointer;white-space:nowrap;width:auto !important}
+  .table-builder .add-col-btn:hover{background:rgba(96,240,248,0.15) !important}
+  .tbl-hint{font-size:10px !important;color:rgba(255,255,255,0.3) !important;margin-bottom:8px}
+  /* Preview table */
+  .preview-tbl-wrap{overflow-x:auto}
+  .preview-tbl{border-collapse:collapse;width:100%;font-size:10px !important;min-width:200px}
+  .preview-tbl th{background:rgba(96,240,248,0.1) !important;color:#60F0F8 !important;font-weight:700 !important;padding:5px 8px;text-align:left;white-space:nowrap;border-bottom:1px solid rgba(96,240,248,0.2) !important}
+  .preview-tbl td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,0.06) !important;color:rgba(255,255,255,0.65) !important;vertical-align:top}
+  .preview-tbl tr:last-child td{border-bottom:none !important}
+  .preview-tbl tr:hover td{background:rgba(255,255,255,0.03) !important}
+  .code-box{background:rgba(0,0,0,0.5) !important;border-radius:8px;padding:14px;font-family:'Courier New',monospace !important;font-size:11px !important;color:#6ee7b7 !important;line-height:1.65;white-space:pre-wrap;word-break:break-all;max-height:220px;overflow-y:auto;flex-shrink:0}
+  .ko-divider{border:none !important;border-top:1px solid rgba(255,255,255,0.09) !important;margin:6px 0}
+  .col-hint{display:grid;gap:4px;margin-bottom:4px}
+  .col-hint span{font-size:10px !important;color:rgba(255,255,255,0.3) !important}
+</style>
+</head>
+<body>
+<div class="ko-gen">
+  <div class="app-title">KnowledgeOwl Template Generator</div>
+  <div class="type-tabs">
+    <button class="type-tab active" onclick="setType('gp')">▶ Guided Path</button>
+    <button class="type-tab" onclick="setType('qr')"># Quick Reference</button>
+    <button class="type-tab" onclick="setType('cb')">" Contextual Background</button>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <div class="panel-label">Fill in your content</div>
+      <div id="form-area"></div>
+    </div>
+    <div class="output-panel">
+      <div class="output-label">Live preview</div>
+      <div id="preview-area"></div>
+      <hr class="ko-divider">
+      <div class="preview-title">Code — copy and paste into KnowledgeOwl snippet</div>
+      <div class="code-box" id="code-box"></div>
+      <button class="btn-copy" id="copy-btn" onclick="copyCode()">Copy code</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentType='gp';
+
+// Step type placeholder text
+const PH = {
+  action:    { title: 'e.g. Check the account in Kraken',               body: 'e.g. Review the last three payments and note any failures or pending amounts' },
+  decision:  { title: 'e.g. What does the account show?',               body: 'e.g. Tap the option that matches what you\'re seeing' },
+  judgement: { title: 'e.g. Decide the right outcome for this customer', body: 'e.g. Weigh up the customer\'s circumstances before deciding next steps' },
+};
+
+const state={
+  gp:{title:'',category:'',owner:'',summary:'',lastReviewed:'',before:[''],steps:[{type:'action',title:'',body:'',link:'',linkUrl:'',choices:[],judgement:''}],related:[{text:'',url:''}]},
+  qr:{title:'',category:'',owner:'',summary:'',note:'',lastReviewed:'',sections:[{type:'values',title:'Key thresholds',items:[{label:'',value:'',note:''}]}],related:[{text:'',url:''}]},
+  cb:{title:'',category:'',owner:'',when:'',lastReviewed:'',questions:[{q:'',a:'',say:'',avoid:''}],keyFactsTitle:'',keyFacts:[''],related:[{text:'',url:''}]}
+};
+
+function setType(t){currentType=t;document.querySelectorAll('.type-tab').forEach((el,i)=>el.classList.toggle('active',['gp','qr','cb'][i]===t));renderForm();updateOutput()}
+
+function fld(label,id,val,ph,type='input'){
+  const tag=type==='textarea'?`<textarea id="${id}" oninput="upd('${id}')" placeholder="${ph}">${val||''}</textarea>`:`<input id="${id}" oninput="upd('${id}')" value="${val||''}" placeholder="${ph}">`;
+  return`<div class="field"><label>${label}</label>${tag}</div>`;
+}
+
+function renderForm(){document.getElementById('form-area').innerHTML=currentType==='gp'?gpForm():currentType==='qr'?qrForm():cbForm()}
+
+// ── GUIDED PATH ──
+function gpForm(){
+  const s=state.gp;
+  let h=fld('Article title','gp-title',s.title,"e.g. Customer hasn't paid — how to handle it")
+    +fld('Situation category','gp-category',s.category,"e.g. Customer can't or won't pay")
+    +fld('Owner','gp-owner',s.owner,'e.g. Billing Knowledge Champion')
+    +fld('Summary','gp-summary',s.summary,'1–2 sentences on what this covers','textarea')
+    +fld('Last reviewed','gp-lastReviewed',s.lastReviewed,'e.g. May 2026');
+  h+=`<div class="field"><label>Before you start</label>`;
+  s.before.forEach((b,i)=>h+=`<div style="display:flex;gap:5px;margin-bottom:5px"><input oninput="updBefore(${i},this.value)" value="${b||''}" placeholder="e.g. Account open in Kraken">${s.before.length>1?`<button class="rm-btn" onclick="rmBefore(${i})">×</button>`:''}</div>`);
+  h+=`<button class="btn-add-sub" onclick="addBefore()">+ Add prerequisite</button></div>`;
+  h+=`<hr class="ko-divider" style="margin:10px 0"><div class="steps-label">Steps</div>`;
+  s.steps.forEach((step,i)=>{
+    const ph=PH[step.type]||PH.action;
+    h+=`<div class="step-block"><div class="step-block-header"><div class="step-num-badge">${i+1}</div>
+      <select class="step-type-select" onchange="updStep(${i},'type',this.value)">
+        <option value="action" ${step.type==='action'?'selected':''}>Action</option>
+        <option value="decision" ${step.type==='decision'?'selected':''}>Decision</option>
+        <option value="judgement" ${step.type==='judgement'?'selected':''}>Judgement</option>
+      </select>
+      ${s.steps.length>1?`<button class="step-remove" onclick="rmStep(${i})">×</button>`:''}</div>
+      <div class="field"><label>Step title</label><input oninput="updStep(${i},'title',this.value)" value="${step.title||''}" placeholder="${ph.title}"></div>
+      <div class="field"><label>Instruction</label><textarea oninput="updStep(${i},'body',this.value)" placeholder="${ph.body}">${step.body||''}</textarea></div>`;
+    if(step.type==='decision'){
+      h+=`<div><div class="choices-label">Choice buttons</div>`;
+      (step.choices||[]).forEach((c,ci)=>h+=`<div class="choice-row"><input oninput="updChoice(${i},${ci},'label',this.value)" value="${c.label||''}" placeholder="e.g. First missed payment"><span class="choice-goto-label">→ step</span><input class="choice-goto" type="number" min="1" oninput="updChoice(${i},${ci},'goTo',this.value-1)" value="${(c.goTo||0)+1}">${step.choices.length>1?`<button class="rm-btn" onclick="rmChoice(${i},${ci})">×</button>`:''}</div>`);
+      h+=`<button class="btn-add-sub" onclick="addChoice(${i})">+ Add option</button></div>`;
+    }
+    if(step.type==='judgement')h+=`<div class="field"><label>Escalation note</label><textarea oninput="updStep(${i},'judgement',this.value)" placeholder="e.g. If the customer mentions bereavement or illness, transfer to the Vulnerable Customers team">${step.judgement||''}</textarea></div>`;
+    h+=`<div class="field"><label>Link label (optional)</label><input oninput="updStep(${i},'link',this.value)" value="${step.link||''}" placeholder="e.g. Payment status codes"></div>
+      <div class="field"><label>Link URL (optional)</label><input oninput="updStep(${i},'linkUrl',this.value)" value="${step.linkUrl||''}" placeholder="https://..."></div></div>`;
+  });
+  h+=`<button class="btn-add" onclick="addStep()">+ Add step</button>`;
+  h+=relatedFields('gp');
+  return h;
+}
+
+// ── QUICK REFERENCE ──
+function qrForm(){
+  const s=state.qr;
+  let h=fld('Article title','qr-title',s.title,'e.g. Direct debit failure — amounts and actions')
+    +fld('Situation category','qr-category',s.category,"e.g. Customer can't or won't pay")
+    +fld('Owner','qr-owner',s.owner,'e.g. Billing Knowledge Champion')
+    +fld('Summary','qr-summary',s.summary,'One sentence on what agents find here','textarea')
+    +fld('Note / warning (optional)','qr-note',s.note,'e.g. These thresholds do not apply to prepayment customers')
+    +fld('Last reviewed','qr-lastReviewed',s.lastReviewed,'e.g. May 2026');
+  h+=`<hr class="ko-divider" style="margin:10px 0"><div class="steps-label">Sections — all shown on one page</div>`;
+  s.sections.forEach((sec,i)=>{
+    h+=`<div class="section-block"><div class="section-header">
+      <select class="section-type-select" onchange="updSec(${i},'type',this.value)">
+        <option value="values"   ${sec.type==='values'?'selected':''}>Key values</option>
+        <option value="steps"    ${sec.type==='steps'?'selected':''}>Steps</option>
+        <option value="contacts" ${sec.type==='contacts'?'selected':''}>Key contacts</option>
+        <option value="script"   ${sec.type==='script'?'selected':''}>What to say</option>
+        <option value="table"    ${sec.type==='table'?'selected':''}>Table</option>
+      </select>
+      <div class="field" style="flex:1;margin:0"><input oninput="updSec(${i},'title',this.value)" value="${sec.title||''}" placeholder="Section heading"></div>
+      ${s.sections.length>1?`<button class="step-remove" onclick="rmSec(${i})">×</button>`:''}</div>`;
+
+    if(sec.type==='values'){
+      h+=`<div class="col-hint" style="grid-template-columns:1fr 70px 1fr"><span>Label</span><span>Value</span><span>Note / condition</span></div>`;
+      (sec.items||[]).forEach((it,ii)=>h+=`<div class="values-row"><input oninput="updSecItem(${i},${ii},'label',this.value)" value="${it.label||''}" placeholder="e.g. Max compensation"><input oninput="updSecItem(${i},${ii},'value',this.value)" value="${it.value||''}" placeholder="£30"><input oninput="updSecItem(${i},${ii},'note',this.value)" value="${it.note||''}" placeholder="e.g. Standard accounts only">${(sec.items||[]).length>1?`<button class="rm-btn" onclick="rmSecItem(${i},${ii})">×</button>`:'<span></span>'}</div>`);
+      h+=`<button class="btn-add-sub-teal" onclick="addSecItem(${i})">+ Add value</button>`;
+
+    }else if(sec.type==='steps'){
+      (sec.items||[]).forEach((it,ii)=>h+=`<div class="steps-row"><div class="steps-row-num">${ii+1}</div><input oninput="updSecItem(${i},${ii},'text',this.value)" value="${it.text||''}" placeholder="e.g. Open the account in Kraken and check the last payment date">${(sec.items||[]).length>1?`<button class="rm-btn" onclick="rmSecItem(${i},${ii})">×</button>`:''}</div>`);
+      h+=`<button class="btn-add-sub-teal" onclick="addSecItem(${i})">+ Add step</button>`;
+
+    }else if(sec.type==='contacts'){
+      h+=`<div class="col-hint" style="grid-template-columns:1fr 1fr 1fr"><span>Team / name</span><span>Contact (email / Slack)</span><span>When to use</span></div>`;
+      (sec.items||[]).forEach((it,ii)=>h+=`<div class="contacts-row"><input oninput="updSecItem(${i},${ii},'team',this.value)" value="${it.team||''}" placeholder="e.g. Debt team"><input oninput="updSecItem(${i},${ii},'contact',this.value)" value="${it.contact||''}" placeholder="e.g. debt@octopus.energy"><input oninput="updSecItem(${i},${ii},'when',this.value)" value="${it.when||''}" placeholder="e.g. Balance over £150">${(sec.items||[]).length>1?`<button class="rm-btn" onclick="rmSecItem(${i},${ii})">×</button>`:'<span></span>'}</div>`);
+      h+=`<button class="btn-add-sub-teal" onclick="addSecItem(${i})">+ Add contact</button>`;
+
+    }else if(sec.type==='script'){
+      h+=`<div class="field"><label>When to use</label><input oninput="updSec(${i},'when',this.value)" value="${sec.when||''}" placeholder="e.g. When explaining why the payment failed"></div>
+        <div class="field"><label>Suggested wording</label><textarea oninput="updSec(${i},'text',this.value)" placeholder="Write in first person, naturally">${sec.text||''}</textarea></div>
+        <div class="field"><label>Avoid saying (optional)</label><input oninput="updSec(${i},'avoid',this.value)" value="${sec.avoid||''}" placeholder="e.g. Avoid saying 'your bank rejected it' — say 'the payment didn't go through' instead"></div>`;
+
+    }else if(sec.type==='table'){
+      h+=tableBuilder(i,sec);
+    }
+    h+=`</div>`;
+  });
+  h+=`<button class="btn-add" onclick="addSec()">+ Add section</button>`;
+  h+=relatedFields('qr');
+  return h;
+}
+
+// ── TABLE BUILDER ──
+function tableBuilder(si, sec){
+  const cols = sec.columns || ['',''];
+  const rows = sec.rows || [['','']];
+  let h=`<div class="tbl-hint">Add columns then fill in your rows below. Each column header is teal; data rows are white.</div>`;
+  h+=`<div class="table-builder"><table>`;
+  // Header row
+  h+=`<tr>`;
+  cols.forEach((col,ci)=>{
+    h+=`<th><div class="th-cell">
+      <input oninput="updTblCol(${si},${ci},this.value)" value="${col||''}" placeholder="Column ${ci+1}">
+      ${cols.length>1?`<button class="rm-col-btn" onclick="rmTblCol(${si},${ci})" title="Remove column">×</button>`:''}
+    </div></th>`;
+  });
+  // Add column button in header
+  h+=`<th style="vertical-align:middle;padding:0 0 3px 4px"><button class="add-col-btn" onclick="addTblCol(${si})">+ Col</button></th>`;
+  h+=`</tr>`;
+  // Data rows
+  rows.forEach((row,ri)=>{
+    h+=`<tr>`;
+    cols.forEach((_,ci)=>{
+      const val=(row&&row[ci])||'';
+      h+=`<td><div class="td-cell"><input oninput="updTblCell(${si},${ri},${ci},this.value)" value="${val}" placeholder="—"></div></td>`;
+    });
+    // Row remove button
+    h+=`<td style="vertical-align:middle;padding:0 0 3px 4px">${rows.length>1?`<button class="rm-row-btn" onclick="rmTblRow(${si},${ri})" title="Remove row">×</button>`:'<span></span>'}</td>`;
+    h+=`</tr>`;
+  });
+  h+=`</table></div>`;
+  h+=`<button class="btn-add-sub-teal" style="margin-top:6px" onclick="addTblRow(${si})">+ Add row</button>`;
+  return h;
+}
+
+// ── CONTEXTUAL BACKGROUND ──
+function cbForm(){
+  const s=state.cb;
+  let h=fld('Article title','cb-title',s.title,'e.g. Why has my bill increased?')
+    +fld('Situation category','cb-category',s.category,"e.g. Customer can't or won't pay")
+    +fld('Owner','cb-owner',s.owner,'e.g. Billing Knowledge Champion')
+    +fld('When to use this','cb-when',s.when,'e.g. Use when a customer asks why their bill has gone up and you need to explain the factors involved','textarea')
+    +fld('Last reviewed','cb-lastReviewed',s.lastReviewed,'e.g. May 2026');
+  h+=`<hr class="ko-divider" style="margin:10px 0"><div class="steps-label">Questions &amp; answers</div>`;
+  s.questions.forEach((q,i)=>{
+    h+=`<div class="step-block"><div class="step-block-header"><div class="step-num-badge" style="background:#ffb450 !important;color:#1F1446 !important">${i+1}</div>${s.questions.length>1?`<button class="step-remove" onclick="rmQ(${i})">×</button>`:''}</div>
+      <div class="field"><label>Customer's question</label><input oninput="updQ(${i},'q',this.value)" value="${q.q||''}" placeholder="e.g. Why has my bill gone up?"></div>
+      <div class="field"><label>Answer</label><textarea oninput="updQ(${i},'a',this.value)" placeholder="Short, factual, 2–3 sentences. No jargon.">${q.a||''}</textarea></div>
+      <div class="field"><label>You could say (optional)</label><textarea oninput="updQ(${i},'say',this.value)" placeholder="e.g. Your bill has gone up because the unit rate changed in October — I can show you the exact breakdown if that would help">${q.say||''}</textarea></div>
+      <div class="field"><label>Avoid saying (optional)</label><input oninput="updQ(${i},'avoid',this.value)" value="${q.avoid||''}" placeholder="e.g. Avoid 'your bill is wrong' — say 'let\'s look at what\'s driving the increase' instead"></div></div>`;
+  });
+  h+=`<button class="btn-add" onclick="addQ()">+ Add question</button>`;
+  h+=`<hr class="ko-divider" style="margin:10px 0">${fld('Key facts section title (optional)','cb-keyFactsTitle',s.keyFactsTitle,'e.g. Key regulatory facts')}`;
+  s.keyFacts.forEach((f,i)=>h+=`<div style="display:flex;gap:5px;margin-bottom:5px"><input oninput="updKF(${i},this.value)" value="${f||''}" placeholder="e.g. Ofgem sets the price cap — Octopus cannot change it independently">${s.keyFacts.length>1?`<button class="rm-btn" onclick="rmKF(${i})">×</button>`:''}</div>`);
+  h+=`<button class="btn-add-sub" onclick="addKF()">+ Add fact</button>`;
+  h+=relatedFields('cb');
+  return h;
+}
+
+function relatedFields(prefix){
+  const s=state[prefix];
+  let h=`<hr class="ko-divider" style="margin:10px 0"><div class="steps-label">Related links</div>`;
+  s.related.forEach((r,i)=>h+=`<div class="related-row"><input oninput="updRel('${prefix}',${i},'text',this.value)" value="${r.text||''}" placeholder="Link label"><input oninput="updRel('${prefix}',${i},'url',this.value)" value="${r.url||''}" placeholder="URL">${s.related.length>1?`<button class="rm-btn" onclick="rmRel('${prefix}',${i})">×</button>`:''}</div>`);
+  return h+`<button class="btn-add" onclick="addRel('${prefix}')">+ Add related link</button>`;
+}
+
+// ── STATE UPDATES ──
+function upd(id){const val=document.getElementById(id)?.value||'';const dash=id.indexOf('-');const prefix=id.substring(0,dash);const key=id.substring(dash+1);if(state[prefix])state[prefix][key]=val;updateOutput()}
+function updBefore(i,v){state.gp.before[i]=v;updateOutput()}
+function addBefore(){state.gp.before.push('');renderForm();updateOutput()}
+function rmBefore(i){state.gp.before.splice(i,1);renderForm();updateOutput()}
+function updStep(i,k,v){state.gp.steps[i][k]=v;if(k==='type'&&v==='decision'&&!state.gp.steps[i].choices?.length)state.gp.steps[i].choices=[{label:'',goTo:0}];renderForm();updateOutput()}
+function rmStep(i){state.gp.steps.splice(i,1);renderForm();updateOutput()}
+function addStep(){state.gp.steps.push({type:'action',title:'',body:'',link:'',linkUrl:'',choices:[],judgement:''});renderForm();updateOutput()}
+function updChoice(si,ci,k,v){state.gp.steps[si].choices[ci][k]=k==='goTo'?Math.max(0,parseInt(v)||0):v;updateOutput()}
+function addChoice(si){state.gp.steps[si].choices.push({label:'',goTo:0});renderForm();updateOutput()}
+function rmChoice(si,ci){state.gp.steps[si].choices.splice(ci,1);renderForm();updateOutput()}
+
+function updSec(i,k,v){
+  if(k==='type'){
+    const blank={values:{label:'',value:'',note:''},steps:{text:''},contacts:{team:'',contact:'',when:''}};
+    const cols=v==='table'?['','']:undefined;
+    const rows=v==='table'?[['','']]:undefined;
+    state.qr.sections[i]={type:v,title:state.qr.sections[i].title,items:[blank[v]||{}],columns:cols,rows:rows};
+    renderForm();
+  }else{state.qr.sections[i][k]=v;}
+  updateOutput();
+}
+function addSec(){state.qr.sections.push({type:'values',title:'',items:[{label:'',value:'',note:''}]});renderForm();updateOutput()}
+function rmSec(i){state.qr.sections.splice(i,1);renderForm();updateOutput()}
+function updSecItem(si,ii,k,v){state.qr.sections[si].items[ii][k]=v;updateOutput()}
+function addSecItem(si){
+  const t=state.qr.sections[si].type;
+  const blank={values:{label:'',value:'',note:''},steps:{text:''},contacts:{team:'',contact:'',when:''}};
+  state.qr.sections[si].items.push(blank[t]||{text:''});
+  renderForm();updateOutput();
+}
+function rmSecItem(si,ii){state.qr.sections[si].items.splice(ii,1);renderForm();updateOutput()}
+
+// Table operations
+function ensureTable(si){if(!state.qr.sections[si].columns)state.qr.sections[si].columns=['',''];if(!state.qr.sections[si].rows)state.qr.sections[si].rows=[['','']]}
+function updTblCol(si,ci,v){ensureTable(si);state.qr.sections[si].columns[ci]=v;updateOutput()}
+function addTblCol(si){
+  ensureTable(si);
+  state.qr.sections[si].columns.push('');
+  state.qr.sections[si].rows=state.qr.sections[si].rows.map(r=>[...r,'']);
+  renderForm();updateOutput();
+}
+function rmTblCol(si,ci){
+  ensureTable(si);
+  state.qr.sections[si].columns.splice(ci,1);
+  state.qr.sections[si].rows=state.qr.sections[si].rows.map(r=>{const nr=[...r];nr.splice(ci,1);return nr});
+  renderForm();updateOutput();
+}
+function addTblRow(si){
+  ensureTable(si);
+  const cols=state.qr.sections[si].columns.length||2;
+  state.qr.sections[si].rows.push(new Array(cols).fill(''));
+  renderForm();updateOutput();
+}
+function rmTblRow(si,ri){ensureTable(si);state.qr.sections[si].rows.splice(ri,1);renderForm();updateOutput()}
+function updTblCell(si,ri,ci,v){ensureTable(si);if(!state.qr.sections[si].rows[ri])state.qr.sections[si].rows[ri]=[];state.qr.sections[si].rows[ri][ci]=v;updateOutput()}
+
+function updQ(i,k,v){state.cb.questions[i][k]=v;updateOutput()}
+function addQ(){state.cb.questions.push({q:'',a:'',say:'',avoid:''});renderForm();updateOutput()}
+function rmQ(i){state.cb.questions.splice(i,1);renderForm();updateOutput()}
+function updKF(i,v){state.cb.keyFacts[i]=v;updateOutput()}
+function addKF(){state.cb.keyFacts.push('');renderForm();updateOutput()}
+function rmKF(i){state.cb.keyFacts.splice(i,1);renderForm();updateOutput()}
+function updRel(p,i,k,v){state[p].related[i][k]=v;updateOutput()}
+function addRel(p){state[p].related.push({text:'',url:''});renderForm();updateOutput()}
+function rmRel(p,i){state[p].related.splice(i,1);renderForm();updateOutput()}
+
+// ── PREVIEW ──
+function updateOutput(){
+  document.getElementById('preview-area').innerHTML=renderPreview();
+  document.getElementById('code-box').textContent=generateCode();
+  const btn=document.getElementById('copy-btn');btn.textContent='Copy code';btn.classList.remove('copied');
+}
+
+function renderPreview(){
+  if(currentType==='gp'){
+    const s=state.gp;
+    const steps=s.steps.map((step,i)=>{
+      const choices=step.type==='decision'&&step.choices?.length?step.choices.map(c=>`<div class="preview-choice"><span>${c.label||'Option'}</span><span style="color:#FF48D8;font-size:10px">→ Step ${(c.goTo||0)+1}</span></div>`).join(''):'';
+      return`<div class="preview-step"><div class="preview-step-num">${i+1}</div><div class="preview-step-card"><div class="preview-step-title">${step.title||'Step title'}</div><div>${step.body||''}</div>${choices}</div></div>`;
+    }).join('');
+    return`<div class="preview-box"><span class="preview-badge gp">Guided path</span><div class="preview-h1">${s.title||'Article title'}</div><div class="preview-meta">${s.category||'Category'} · ${s.owner||'Owner'}</div>${steps}</div>`;
+  }
+  if(currentType==='qr'){
+    const s=state.qr;
+    const sections=s.sections.map(sec=>{
+      let content='';
+      if(sec.type==='values')content=`<div class="preview-value-grid">`+(sec.items||[]).map(it=>`<div class="preview-value-card"><div class="preview-value-lbl">${it.label||'Label'}</div><div class="preview-value-val">${it.value||'—'}</div></div>`).join('')+`</div>`;
+      else if(sec.type==='steps')content=(sec.items||[]).map((it,i)=>`<div class="preview-step"><div class="preview-step-num teal">${i+1}</div><div class="preview-step-card">${it.text||'Step'}</div></div>`).join('');
+      else if(sec.type==='contacts')content=`<div class="preview-contact-row" style="background:rgba(96,240,248,0.08) !important"><span style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:700">TEAM</span><span style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:700">CONTACT</span><span style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:700">WHEN</span></div>`+(sec.items||[]).map(it=>`<div class="preview-contact-row"><span class="preview-contact-name">${it.team||'Team'}</span><span class="preview-contact-detail">${it.contact||'—'}</span><span class="preview-contact-when">${it.when||''}</span></div>`).join('');
+      else if(sec.type==='script')content=`<div style="background:rgba(200,154,255,0.08);border-left:2px solid #c89aff;padding:7px 10px;border-radius:0 5px 5px 0;font-size:10px;color:rgba(255,255,255,0.55);font-style:italic">"${sec.text||'Suggested wording...'}"</div>`;
+      else if(sec.type==='table'){
+        const cols=sec.columns||[];
+        const rows=sec.rows||[];
+        if(cols.length){
+          const ths=cols.map(c=>`<th>${c||'Header'}</th>`).join('');
+          const trs=rows.map(r=>`<tr>${cols.map((_,ci)=>`<td>${(r&&r[ci])||''}</td>`).join('')}</tr>`).join('');
+          content=`<div class="preview-tbl-wrap"><table class="preview-tbl"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;
+        }
+      }
+      return`<div class="preview-section-label">${sec.title||sec.type}</div>${content}`;
+    }).join('<div style="border-top:1px solid rgba(255,255,255,0.07);margin:8px 0"></div>');
+    return`<div class="preview-box"><span class="preview-badge qr">Quick reference</span><div class="preview-h1">${s.title||'Article title'}</div><div class="preview-meta">${s.category||'Category'} · ${s.owner||'Owner'}</div>${sections}</div>`;
+  }
+  const s=state.cb;
+  const qs=s.questions.map(q=>`<div class="preview-qa"><div class="preview-qa-q">${q.q||'Question'}</div><div class="preview-qa-a">${q.a||'Answer...'}</div></div>`).join('');
+  return`<div class="preview-box"><span class="preview-badge cb">Background context</span><div class="preview-h1">${s.title||'Article title'}</div><div class="preview-meta">${s.category||'Category'} · ${s.owner||'Owner'}</div><div style="background:rgba(255,180,80,0.07);border-left:2px solid #ffb450;padding:7px 10px;border-radius:0 5px 5px 0;font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:10px">${s.when||'When to use this...'}</div>${qs}</div>`;
+}
+
+// ── CODE GENERATION ──
+function esc(str){return(str||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n')}
+
+function generateCode(){
+  if(currentType==='gp'){
+    const s=state.gp;
+    const steps=s.steps.map(step=>{
+      let o=`    {\n      type: '${step.type}',\n      title: '${esc(step.title)}',\n      body: '${esc(step.body)}'`;
+      if(step.type==='decision'&&step.choices?.length)o+=`,\n      choices: [\n${step.choices.map(c=>`        { label: '${esc(c.label)}', goTo: ${c.goTo||0} }`).join(',\n')}\n      ]`;
+      if(step.type==='judgement'&&step.judgement)o+=`,\n      judgement: '${esc(step.judgement)}'`;
+      if(step.link)o+=`,\n      link: { text: '${esc(step.link)}', url: '${esc(step.linkUrl)}' }`;
+      return o+'\n    }';
+    }).join(',\n');
+    return`<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<div id="gp-root" style="font-family:'Montserrat',sans-serif !important;background:#1F1446 !important;padding:20px;border-radius:12px;color:#fff !important"></div>
+<script>
+const CONFIG = {
+  ga4Id: 'G-XXXXXXXXXX',
+  title: '${esc(s.title)}',
+  category: '${esc(s.category)}',
+  owner: '${esc(s.owner)}',
+  summary: '${esc(s.summary)}',
+  lastReviewed: '${esc(s.lastReviewed)}',
+  before: [${s.before.filter(b=>b).map(b=>`'${esc(b)}'`).join(', ')}],
+  steps: [\n${steps}\n  ],
+  related: [${s.related.filter(r=>r.text).map(r=>`{ text: '${esc(r.text)}', url: '${esc(r.url)}' }`).join(', ')}],
+};
+// Paste guided path engine code here from master snippet
+<\/script>`;
+  }
+  if(currentType==='qr'){
+    const s=state.qr;
+    const secs=s.sections.map(sec=>{
+      let o=`    { type: '${sec.type}', title: '${esc(sec.title)}'`;
+      if(sec.type==='values')o+=`, items: [${(sec.items||[]).map(it=>`{ label: '${esc(it.label)}', value: '${esc(it.value)}', note: '${esc(it.note)}' }`).join(', ')}]`;
+      else if(sec.type==='steps')o+=`, items: [${(sec.items||[]).map(it=>`{ text: '${esc(it.text)}' }`).join(', ')}]`;
+      else if(sec.type==='contacts')o+=`, items: [${(sec.items||[]).map(it=>`{ team: '${esc(it.team)}', contact: '${esc(it.contact)}', when: '${esc(it.when)}' }`).join(', ')}]`;
+      else if(sec.type==='script')o+=`, when: '${esc(sec.when)}', text: '${esc(sec.text)}', avoid: '${esc(sec.avoid)}'`;
+      else if(sec.type==='table'){
+        const cols=(sec.columns||[]).map(c=>`'${esc(c)}'`).join(', ');
+        const rows=(sec.rows||[]).map(r=>`[${(r||[]).map(c=>`'${esc(c)}'`).join(', ')}]`).join(', ');
+        o+=`, columns: [${cols}], rows: [${rows}]`;
+      }
+      return o+' }';
+    }).join(',\n');
+    return`<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<div id="qr-root" style="font-family:'Montserrat',sans-serif !important;background:#1F1446 !important;padding:20px;border-radius:12px;color:#fff !important"></div>
+<script>
+const CONFIG = {
+  ga4Id: 'G-XXXXXXXXXX',
+  title: '${esc(s.title)}',
+  category: '${esc(s.category)}',
+  owner: '${esc(s.owner)}',
+  summary: '${esc(s.summary)}',
+  note: '${esc(s.note)}',
+  lastReviewed: '${esc(s.lastReviewed)}',
+  sections: [\n${secs}\n  ],
+  related: [${s.related.filter(r=>r.text).map(r=>`{ text: '${esc(r.text)}', url: '${esc(r.url)}' }`).join(', ')}],
+};
+// Paste quick reference engine code here from master snippet
+<\/script>`;
+  }
+  const s=state.cb;
+  return`<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<div id="cb-root" style="font-family:'Montserrat',sans-serif !important;background:#1F1446 !important;padding:20px;border-radius:12px;color:#fff !important"></div>
+<script>
+const CONFIG = {
+  ga4Id: 'G-XXXXXXXXXX',
+  title: '${esc(s.title)}',
+  category: '${esc(s.category)}',
+  owner: '${esc(s.owner)}',
+  when: '${esc(s.when)}',
+  lastReviewed: '${esc(s.lastReviewed)}',
+  questions: [\n${s.questions.map(q=>`    { q: '${esc(q.q)}', a: '${esc(q.a)}', say: '${esc(q.say)}', avoid: '${esc(q.avoid)}' }`).join(',\n')}\n  ],
+  keyFactsTitle: '${esc(s.keyFactsTitle)}',
+  keyFacts: [${s.keyFacts.filter(f=>f).map(f=>`'${esc(f)}'`).join(', ')}],
+  related: [${s.related.filter(r=>r.text).map(r=>`{ text: '${esc(r.text)}', url: '${esc(r.url)}' }`).join(', ')}],
+};
+// Paste contextual background engine code here from master snippet
+<\/script>`;
+}
+
+function copyCode(){
+  navigator.clipboard.writeText(document.getElementById('code-box').textContent).then(()=>{
+    const btn=document.getElementById('copy-btn');btn.textContent='Copied ✓';btn.classList.add('copied');
+  });
+}
+
+renderForm();
+updateOutput();
+</script>
+</body>
+</html>
